@@ -15,7 +15,7 @@ export function Footer() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Portfolio
+            Resume
           </a>
           <a
             className="text-[10px] font-medium tracking-widest uppercase text-foreground hover:text-foreground/40 transition-colors"
