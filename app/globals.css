@@ -115,6 +115,16 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Gentle zoom-in for floating preview image: starts fitted, then slightly zooms in */
+@keyframes preview-zoom-in {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

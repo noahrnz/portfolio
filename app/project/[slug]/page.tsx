@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { projects } from "@/lib/projects"
 import { CaseStudyContent } from "@/components/case-study-content"
+import { ThesisApp } from "@/components/thesis-app"
 import type { Metadata } from "next"
 
 interface PageProps {
@@ -27,6 +28,10 @@ export default async function ProjectPage({ params }: PageProps) {
 
   if (!project) {
     notFound()
+  }
+
+  if (slug === "thesis") {
+    return <ThesisApp />
   }
 
   return <CaseStudyContent project={project} />

@@ -1,13 +1,20 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { type Project, projects } from "@/lib/projects"
 
 export function CaseStudyContent({ project }: { project: Project }) {
+  const [showComingSoon, setShowComingSoon] = useState(false)
   const currentIndex = projects.findIndex((p) => p.id === project.id)
   const nextProject = projects[(currentIndex + 1) % projects.length]
+
+  const handleImageClick = () => {
+    setShowComingSoon(true)
+    setTimeout(() => setShowComingSoon(false), 1500)
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background">
@@ -39,7 +46,14 @@ export function CaseStudyContent({ project }: { project: Project }) {
             </span>
           </div>
           <h1 className="text-4xl md:text-6xl font-light tracking-tight text-balance leading-tight mb-8">
-            {project.title}
+            {project.title.includes(" — ") ? (
+              <>
+                {project.title.split(" — ")[0]}
+                <span className="text-foreground/50"> — {project.title.split(" — ").slice(1).join(" — ")}</span>
+              </>
+            ) : (
+              project.title
+            )}
           </h1>
           <p className="text-sm text-foreground/50 max-w-lg leading-relaxed">
             {project.description}
@@ -50,7 +64,11 @@ export function CaseStudyContent({ project }: { project: Project }) {
       {/* Hero Image */}
       <section className="px-12 pb-24">
         <div className="mx-auto max-w-[1400px]">
-          <div className="w-full aspect-[16/9] overflow-hidden bg-secondary">
+          <button
+            type="button"
+            onClick={handleImageClick}
+            className="relative w-full aspect-[16/9] overflow-hidden bg-secondary block cursor-pointer group"
+          >
             <Image
               src={project.image}
               alt={project.title}
@@ -59,7 +77,12 @@ export function CaseStudyContent({ project }: { project: Project }) {
               className="w-full h-full object-cover"
               priority
             />
-          </div>
+            {showComingSoon && (
+              <span className="absolute inset-0 flex items-center justify-center bg-foreground/80 text-background text-sm font-medium tracking-widest uppercase animate-in fade-in duration-200">
+                Coming soon
+              </span>
+            )}
+          </button>
         </div>
       </section>
 

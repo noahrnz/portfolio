@@ -1,20 +1,56 @@
 "use client"
 
-import { useState, useRef } from "react"
-import Link from "next/link"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { projects } from "@/lib/projects"
 
+const PREVIEW_OFFSET_RIGHT = 320
+const VIEWPORT_PADDING = 24
+
 export function ProjectList() {
   const [activeProject, setActiveProject] = useState<string | null>(null)
+  const [comingSoonProject, setComingSoonProject] = useState<string | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [windowSize, setWindowSize] = useState({ w: 1920, h: 1080 })
   const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const update = () => setWindowSize({ w: window.innerWidth, h: window.innerHeight })
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+  }, [])
+
+  // Auto-clear "coming soon" after a few seconds so hover works again
+  useEffect(() => {
+    if (!comingSoonProject) return
+    const t = setTimeout(() => setComingSoonProject(null), 2500)
+    return () => clearTimeout(t)
+  }, [comingSoonProject])
 
   const handleMouseMove = (e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY })
   }
 
   const activeData = projects.find((p) => p.id === activeProject)
+  const comingSoonData = projects.find((p) => p.id === comingSoonProject)
+  const previewData = comingSoonData ?? activeData
+
+  const previewW = previewData ? Math.min(previewData.previewWidth, 600) : 0
+  const previewH = previewData ? Math.min(previewData.previewHeight, 450) : 0
+  const left = previewData
+    ? Math.max(
+        VIEWPORT_PADDING,
+        Math.min(mousePos.x + PREVIEW_OFFSET_RIGHT, windowSize.w - previewW - VIEWPORT_PADDING)
+      )
+    : 0
+  const top = previewData
+    ? Math.max(
+        VIEWPORT_PADDING,
+        Math.min(mousePos.y - previewH / 2, windowSize.h - previewH - VIEWPORT_PADDING)
+      )
+    : 0
+  const showComingSoonOnPreview = Boolean(comingSoonProject && comingSoonData)
 
   return (
     <div
@@ -22,33 +58,39 @@ export function ProjectList() {
       className="project-list w-full max-w-2xl px-12 space-y-2"
       onMouseMove={handleMouseMove}
     >
-      {/* Floating preview image that follows cursor */}
+      {/* Floating preview — way to the right, follows cursor; shows coming soon overlay when clicked */}
       <div
-        className="fixed pointer-events-none z-40 transition-opacity duration-300 ease-out"
+        className="fixed pointer-events-none z-50 transition-opacity duration-300 ease-out"
         style={{
-          left: mousePos.x,
-          top: mousePos.y,
-          transform: "translate(-50%, -50%)",
-          opacity: activeProject ? 1 : 0,
-          visibility: activeProject ? "visible" : "hidden",
+          left,
+          top,
+          opacity: previewData ? 1 : 0,
+          visibility: previewData ? "visible" : "hidden",
         }}
       >
-        {activeData && (
+        {previewData && (
           <div
-            className="overflow-hidden bg-secondary"
+            className="overflow-hidden bg-secondary relative"
             style={{
-              width: Math.min(activeData.previewWidth, 600),
-              height: Math.min(activeData.previewHeight, 450),
+              width: previewW,
+              height: previewH,
             }}
           >
             <Image
-              src={activeData.image}
-              alt={activeData.title}
-              width={activeData.previewWidth}
-              height={activeData.previewHeight}
-              className="w-full h-full object-cover scale-110 transition-transform duration-[2s] ease-out hover:scale-100"
+              src={previewData.image}
+              alt={previewData.title}
+              width={previewData.previewWidth}
+              height={previewData.previewHeight}
+              sizes={`${previewW}px`}
+              quality={90}
+              className={`w-full h-full object-cover ${showComingSoonOnPreview ? "brightness-[0.35]" : "animate-[preview-zoom-in_2.5s_ease-out_forwards]"}`}
               priority
             />
+            {showComingSoonOnPreview && (
+              <span className="absolute inset-0 flex items-center justify-center text-white text-center text-[11px] font-medium tracking-wide px-4">
+                Good things take time. Like building this portfolio
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -57,27 +99,39 @@ export function ProjectList() {
         <div
           key={project.id}
           className="group relative py-4 border-b border-transparent hover:border-foreground/5 transition-colors"
-          onMouseEnter={() => setActiveProject(project.id)}
+          onMouseEnter={() => {
+            setActiveProject(project.id)
+            setComingSoonProject(null)
+          }}
           onMouseLeave={() => setActiveProject(null)}
         >
-          <Link
-            href={`/project/${project.id}`}
-            className="flex items-center justify-between w-full"
+          <button
+            type="button"
+            onClick={() => setComingSoonProject(project.id)}
+            className="flex items-center justify-between w-full text-left"
           >
             <div className="flex items-baseline gap-6">
               <span className="text-[10px] font-medium text-foreground/30 tracking-widest">
                 {project.number}
               </span>
               <h2 className="text-sm font-normal tracking-[0.15em] uppercase transition-all group-hover:pl-4">
-                {project.title}
+                {project.title.includes(" — ") ? (
+                  <>
+                    {project.title.split(" — ")[0]}
+                    <span className="text-foreground/50"> — {project.title.split(" — ").slice(1).join(" — ")}</span>
+                  </>
+                ) : (
+                  project.title
+                )}
               </h2>
             </div>
             <span className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase">
               {project.tag}
             </span>
-          </Link>
+          </button>
         </div>
       ))}
+
     </div>
   )
 }

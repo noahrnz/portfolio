@@ -18,13 +18,13 @@ yarn-error.log*
 
 # env files
 .env*
+.env.local
 
 # vercel
 .vercel
 
-# local duplicate
+# legacy duplicate (remove folder manually if present)
 /portfolio
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
