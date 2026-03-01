@@ -3,7 +3,7 @@ import Link from "next/link"
 export function Header() {
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-background/90 backdrop-blur-md">
-      <nav className="mx-auto max-w-[1400px] px-12 h-20 flex items-center justify-between">
+      <nav className="mx-auto max-w-[1400px] px-6 sm:px-12 h-16 sm:h-20 flex items-center justify-between">
         <div>
           <Link
             href="/"
