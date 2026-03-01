@@ -27,7 +27,7 @@ export function Footer() {
           </a>
           <a
             className="text-[10px] font-medium tracking-widest uppercase text-foreground hover:text-foreground/40 transition-colors"
-            href="mailto:hello@noahahrens.com"
+            href="mailto:noahsahrens@gmail.com"
           >
             Contact
           </a>
