@@ -1,0 +1,21 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Animate hero screen</title>
+    </head>
+
+  <body>
+    <div id="root"></div>
+    <script>
+      // Ensure hash router has a path when embedded in iframe (e.g. portfolio case study)
+      if (!window.location.hash || window.location.hash === '') {
+        window.location.hash = '#/';
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+  </html>
+  

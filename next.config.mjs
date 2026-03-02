@@ -4,7 +4,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    // Optimization on so hero images can be served at full quality and right size
+    // unoptimized: true,
   },
 }
 

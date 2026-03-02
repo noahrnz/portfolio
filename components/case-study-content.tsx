@@ -1,20 +1,18 @@
 "use client"
 
-import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { type Project, projects } from "@/lib/projects"
+import { LazyPrototypeHero } from "@/components/lazy-prototype-hero"
+import { TasksHero } from "@/components/tasks-hero"
+
+// Projects that are shown in the "Next project" link (thesis is excluded — has its own entry gate)
+const projectsForNextLink = projects.filter((p) => p.id !== "thesis")
 
 export function CaseStudyContent({ project }: { project: Project }) {
-  const [showComingSoon, setShowComingSoon] = useState(false)
-  const currentIndex = projects.findIndex((p) => p.id === project.id)
-  const nextProject = projects[(currentIndex + 1) % projects.length]
-
-  const handleImageClick = () => {
-    setShowComingSoon(true)
-    setTimeout(() => setShowComingSoon(false), 1500)
-  }
+  const currentIndex = projectsForNextLink.findIndex((p) => p.id === project.id)
+  const nextProject = projectsForNextLink[(currentIndex + 1) % projectsForNextLink.length]
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-foreground selection:text-background">
@@ -28,19 +26,13 @@ export function CaseStudyContent({ project }: { project: Project }) {
             <ArrowLeft className="w-3.5 h-3.5" />
             Back
           </Link>
-          <span className="text-xs font-medium tracking-[0.2em] uppercase text-foreground/30">
-            {project.number} / 04
-          </span>
         </nav>
       </header>
 
-      {/* Hero */}
-      <section className="pt-40 pb-20 px-12">
-        <div className="mx-auto max-w-[1400px]">
-          <div className="flex items-baseline gap-6 mb-6">
-            <span className="text-[10px] font-medium text-foreground/30 tracking-widest">
-              {project.number}
-            </span>
+      {/* Hero — centered article style */}
+      <section className="pt-40 pb-20 px-6 sm:px-12">
+        <div className="mx-auto max-w-[720px] text-center">
+          <div className="flex items-baseline justify-center gap-6 mb-6">
             <span className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase">
               {project.tag}
             </span>
@@ -55,41 +47,60 @@ export function CaseStudyContent({ project }: { project: Project }) {
               project.title
             )}
           </h1>
-          <p className="text-sm text-foreground/50 max-w-lg leading-relaxed">
+          <p className="text-sm text-foreground/50 max-w-lg mx-auto leading-relaxed text-center">
             {project.description}
           </p>
         </div>
       </section>
 
-      {/* Hero Image */}
-      <section className="px-12 pb-24">
+      {/* Hero: lazy-loaded prototype (phone frame) for climbing-gym, else hero image */}
+      <section className="px-6 sm:px-12 pb-24">
         <div className="mx-auto max-w-[1400px]">
-          <button
-            type="button"
-            onClick={handleImageClick}
-            className="relative w-full aspect-[16/9] overflow-hidden bg-secondary block cursor-pointer group"
-          >
-            <Image
-              src={project.image}
-              alt={project.title}
-              width={1400}
-              height={788}
-              className="w-full h-full object-cover"
-              priority
-            />
-            {showComingSoon && (
-              <span className="absolute inset-0 flex items-center justify-center bg-foreground/80 text-background text-sm font-medium tracking-widest uppercase animate-in fade-in duration-200">
-                Coming soon
-              </span>
-            )}
-          </button>
+          {project.id === "climbing-gym" ? (
+            <LazyPrototypeHero project={project} />
+          ) : project.id === "ai-task-manager" ? (
+            <div
+              className="relative w-full flex justify-center"
+              style={{
+                maxWidth: 992,
+                height: 620,
+                margin: "0 auto",
+              }}
+            >
+              {/* Positioned so scaled hero (992×620) fits in 620px slot with no cropping */}
+              <div
+                className="absolute left-1/2 top-0"
+                style={{
+                  width: 1240,
+                  height: 775,
+                  transform: "translateX(-50%) scale(0.8)",
+                  transformOrigin: "top center",
+                }}
+              >
+                <TasksHero />
+              </div>
+            </div>
+          ) : (
+            <div className="relative w-full aspect-[16/9] overflow-hidden bg-secondary">
+              <Image
+                src={project.image}
+                alt={project.title}
+                width={1400}
+                height={788}
+                className="w-full h-full object-cover"
+                sizes="(max-width: 1400px) 100vw, 1400px"
+                quality={90}
+                priority
+              />
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Info Grid */}
-      <section className="px-12 pb-24">
+      {/* Info Grid — centered */}
+      <section className="px-6 sm:px-12 pb-24">
         <div className="mx-auto max-w-[1400px]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-foreground/10 pt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-foreground/10 pt-12 text-center">
             <div>
               <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-3">
                 Role
@@ -112,55 +123,155 @@ export function CaseStudyContent({ project }: { project: Project }) {
         </div>
       </section>
 
-      {/* Case Study Sections */}
-      <section className="px-12 pb-24">
-        <div className="mx-auto max-w-[1400px]">
-          <div className="max-w-2xl space-y-20">
+      {/* Case Study Sections — left-aligned body copy for readability */}
+      <section className="px-6 sm:px-12 pb-24">
+        <div className="mx-auto max-w-[720px] text-left space-y-20">
+          <div>
+            <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
+              Overview
+            </p>
+            <p className="text-base font-light leading-[1.8] text-foreground/80">
+              {project.overview}
+            </p>
+          </div>
+          {project.id === "credits-and-conversion" && (
             <div>
               <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
-                Overview
+                Key screens
               </p>
-              <p className="text-base font-light leading-[1.8] text-foreground/80">
-                {project.overview}
-              </p>
+              <div className="space-y-8">
+                <div className="rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/credits-billing-center.png"
+                    alt="Billing Center — plan overview, usage stats, and plan comparison"
+                    width={720}
+                    height={480}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+                <div className="rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/credits-choose-plan.png"
+                    alt="Choose plan modal — Pro vs Business with yearly or monthly billing"
+                    width={720}
+                    height={480}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+                <div className="rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/credits-manage-plan.png"
+                    alt="Manage Plan modal — billing period, seats, and order summary"
+                    width={720}
+                    height={480}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              </div>
             </div>
+          )}
+          {project.id === "ai-task-manager" && (
             <div>
               <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
-                Challenge
+                Key screens
               </p>
-              <p className="text-base font-light leading-[1.8] text-foreground/80">
-                {project.challenge}
-              </p>
+              <div className="space-y-8">
+                <div className="rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/tasks-list-view.png"
+                    alt="Introducing task list view — Sort, Group, New task, keyboard shortcuts"
+                    width={720}
+                    height={480}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+                <div className="rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/tasks-meeting-detail.png"
+                    alt="Meeting detail with Open Tasks — agenda, tasks, qualification"
+                    width={720}
+                    height={480}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+                <div className="rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/tasks-todo-list.png"
+                    alt="My tasks To do list — search, filter, sort, task list with Start"
+                    width={720}
+                    height={480}
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              </div>
             </div>
+          )}
+          {project.id === "climbing-gym" && (
             <div>
               <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
-                Solution
+                The problem
               </p>
-              <p className="text-base font-light leading-[1.8] text-foreground/80">
-                {project.solution}
+              <p className="text-base font-light leading-[1.8] text-foreground/80 mb-8">
+                The current website members use to view schedules and book classes—hard to use on mobile and not built for quick check-in or “my classes” flows.
               </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-items-center">
+                <div className="w-full max-w-[280px] rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/climbing-gym-before-1.png"
+                    alt="Current Touchstone QR code check-in page on mobile"
+                    width={280}
+                    height={560}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+                <div className="w-full max-w-[280px] rounded-xl overflow-hidden border border-foreground/10 bg-muted/20">
+                  <Image
+                    src="/images/climbing-gym-before-2.png"
+                    alt="Current Touchstone Mission Cliffs calendar on mobile"
+                    width={280}
+                    height={560}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
-                Result
-              </p>
-              <p className="text-base font-light leading-[1.8] text-foreground/80">
-                {project.result}
-              </p>
-            </div>
+          )}
+          <div>
+            <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
+              Challenge
+            </p>
+            <p className="text-base font-light leading-[1.8] text-foreground/80">
+              {project.challenge}
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
+              Solution
+            </p>
+            <p className="text-base font-light leading-[1.8] text-foreground/80">
+              {project.solution}
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-6">
+              Result
+            </p>
+            <p className="text-base font-light leading-[1.8] text-foreground/80">
+              {project.result}
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Next Project */}
-      <section className="px-12 pb-32 pt-12">
-        <div className="mx-auto max-w-[1400px] border-t border-foreground/10 pt-16">
+      {/* Next Project — centered */}
+      <section className="px-6 sm:px-12 pb-32 pt-12">
+        <div className="mx-auto max-w-[720px] border-t border-foreground/10 pt-16 flex flex-col items-center text-center">
           <p className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase mb-8">
             Next Project
           </p>
           <Link
             href={`/project/${nextProject.id}`}
-            className="group flex items-baseline gap-6"
+            className="group flex items-baseline gap-6 justify-center"
           >
             <span className="text-[10px] font-medium text-foreground/30 tracking-widest">
               {nextProject.number}

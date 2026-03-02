@@ -43,12 +43,12 @@ export const projects: Project[] = [
     number: "02",
     title: "AI task manager",
     tag: "Sybill.ai",
-    image: "/images/sybill-tasks.png",
-    previewWidth: 500,
-    previewHeight: 650,
+    image: "/images/sybill-tasks-meetings.png",
+    previewWidth: 600,
+    previewHeight: 375,
     description: "Giving time back to teams with a smart to-do list that auto-captures tasks.",
     role: "Product Designer",
-    year: "2025",
+    year: "2026",
     client: "Sybill",
     overview:
       "Sybill Tasks is an intelligent task management feature that automatically captures action items from sales meetings and conversations, giving time back to teams by eliminating manual note-taking.",
@@ -60,16 +60,38 @@ export const projects: Project[] = [
       "Teams using Sybill Tasks reported saving hours per week on manual task entry, with follow-up completion rates improving dramatically. The feature became one of the most-used capabilities in the platform.",
   },
   {
-    id: "thesis",
+    id: "climbing-gym",
     number: "03",
+    title: "Climbing gym app",
+    tag: "Touchstone",
+    image: "/images/climbing-gym.png",
+    previewWidth: 600,
+    previewHeight: 400,
+    description:
+      "My gym’s class booking experience is a mess—so I built a proper app in an afternoon with Stitch, Figma Make, and Cursor.",
+    role: "Product Design Engineer",
+    year: "2026",
+    client: "Touchstone",
+    overview:
+      "I climb at Touchstone and love it—but booking classes means going to their website. It’s clunky, hard to scan on your phone, and feels like it was built a decade ago. I wanted to see how fast I could ship something better.",
+    challenge:
+      "The current flow is desktop-first, buried in menus, and doesn’t give you a simple “my pass” or “my classes” experience. Members end up on the same confusing site every time they want to book or check in. No app, no clear membership view—just a rough web experience.",
+    solution:
+      "I designed and built a mobile-first app in a few hours one Sunday: Stitch for the design, Figma Make to turn it into a React app, and Cursor to wire it up and refine the UI. You get a scannable membership pass, one-tap class browsing and booking, and a clean view of what you’re signed up for—the experience the gym’s website never had.",
+    result:
+      "A working prototype that proves a better path is possible. QR pass for entry, class list with book/unbook, and a profile view—all in a compact app that fits how people actually use their phones at the gym. No backend or launch yet; this was a weekend experiment to show what “good” could look like.",
+  },
+  {
+    id: "thesis",
+    number: "04",
     title: "THESIS — Your Daily Take",
-    tag: "Experimental App",
+    tag: "Experimental",
     image: "/images/thesis.png",
     previewWidth: 700,
     previewHeight: 450,
     description: "Adding AI Agent capabilities to a business texting platform.",
     role: "Product Designer",
-    year: "2025",
+    year: "2026",
     client: "Heymarket",
     overview:
       "Heymarket AI brought intelligent agent capabilities to a business texting platform, enabling automated yet personalized customer interactions at scale through conversational AI.",
@@ -79,26 +101,5 @@ export const projects: Project[] = [
       "I designed the AI agent configuration and monitoring interface, focusing on transparency and control. Businesses could set guardrails, review AI responses, and seamlessly hand off to human agents when needed.",
     result:
       "The AI agent feature enabled businesses to handle significantly more conversations while maintaining high customer satisfaction scores. Response times dropped dramatically across all supported channels.",
-  },
-  {
-    id: "climbing-gym",
-    number: "04",
-    title: "Climbing gym",
-    tag: "Touchstone",
-    image: "/images/climbing-gym.png",
-    previewWidth: 600,
-    previewHeight: 400,
-    description: "Building a bar booking platform from 0-1.",
-    role: "Product Design Engineer",
-    year: "2025",
-    client: "Barty",
-    overview:
-      "Barty is a bar booking platform built from the ground up, connecting nightlife venues with customers looking for seamless reservation and table booking experiences.",
-    challenge:
-      "The nightlife industry lacked a modern, user-friendly booking platform. Existing solutions were fragmented and failed to serve both venue operators and customers effectively in a mobile-first world.",
-    solution:
-      "I designed and engineered the full product from 0-1, creating intuitive booking flows for customers and powerful management tools for venue operators. The platform was built for speed and reliability during peak hours.",
-    result:
-      "Barty successfully launched and onboarded multiple venues, providing a streamlined booking experience that reduced no-shows and increased venue revenue through better capacity management.",
   },
 ]
