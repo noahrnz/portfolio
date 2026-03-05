@@ -3,26 +3,25 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { projects } from "@/lib/projects"
 import { IphoneFrame } from "@/components/iphone-frame"
 import { TasksHero } from "@/components/tasks-hero"
+import { CreditsHero } from "@/components/credits-hero"
+import { OrbPreview } from "@/components/orb-preview"
 import type { Project } from "@/lib/projects"
-
-// Throttle cursor-following so we don't re-render (and flicker the iframe) on every mousemove
-const MOUSE_THROTTLE_MS = 100
 
 const CLIMBING_GYM_ID = "climbing-gym"
 const CLIMBING_PROTOTYPE_BASE = "/prototypes/climbing-gym/index.html"
 
-// Time each screen is shown before switching to the other (home ↔ bookings)
 const CLIMBING_SWITCH_DELAY_MS = 3000
-
-// Full iPhone frame size (no crop) — iPhone 16 aspect 393×852, frame 280px wide
 const CLIMBING_PREVIEW_W = 280
 const CLIMBING_PREVIEW_H = Math.round(280 * (852 / 393))
 
-const PREVIEW_OFFSET_RIGHT = 320
 const VIEWPORT_PADDING = 24
+// Large preview in right column (same trigger, bigger image)
+const PREVIEW_W = 800
+const PREVIEW_H = 560
 
 // Match touch devices or narrow viewports where hover preview isn't useful
 function useIsMobile() {
@@ -45,71 +44,128 @@ function ProjectPreviewContent({
   previewH,
   inline,
   climbingScreen = "",
+  mousePos,
+  windowSize,
 }: {
   previewData: Project | null
   previewW: number
   previewH: number
   inline: boolean
   climbingScreen?: "" | "/bookings"
+  mousePos?: { x: number; y: number }
+  windowSize?: { w: number; h: number }
 }) {
   if (!previewData) return null
 
-  // Mobile / inline: simple static image + short description + link (no live prototype)
+  // Mobile / inline: simple static image + short description + link (no live prototype); full image visible, not cut off
   if (inline) {
+    const isEntropy = previewData.id === "entropy-i"
+    const isTasks = previewData.id === "ai-task-manager"
+    const isCredits = previewData.id === "credits-and-conversion"
     const isPrototype = previewData.id === CLIMBING_GYM_ID
     return (
-      <div className="w-full max-w-md mx-auto space-y-3">
-        <div className="relative">
-          <div
-            className="overflow-hidden bg-secondary relative w-full rounded-lg"
-            style={{ aspectRatio: `${previewData.previewWidth} / ${previewData.previewHeight}` }}
-          >
-            <Image
-              src={previewData.image}
-              alt={previewData.title}
-              width={previewData.previewWidth}
-              height={previewData.previewHeight}
-              sizes="(max-width: 448px) 100vw, 448px"
-              quality={85}
-              className="w-full h-full object-cover"
-              priority
-            />
-          </div>
-          {isPrototype && (
-            <span
-              className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded text-[10px] font-medium tracking-wider uppercase text-foreground/60 bg-background/90 backdrop-blur-sm"
-              aria-hidden
+      <div className="w-full max-w-lg mx-auto space-y-3 overflow-visible">
+        <div className="relative overflow-visible">
+          {isEntropy && (
+            <div
+              className="relative w-full rounded-lg overflow-hidden border border-foreground/10 bg-black flex items-center justify-center"
+              style={{ aspectRatio: `${previewData.previewWidth} / ${previewData.previewHeight}` }}
             >
-              Best viewed on desktop
-            </span>
+              <OrbPreview
+                width={previewData.previewHeight}
+                height={previewData.previewHeight}
+                mouseX={0}
+                mouseY={0}
+              />
+            </div>
+          )}
+
+          {isTasks && (
+            <div className="relative w-full rounded-lg overflow-hidden border border-foreground/10 bg-white" style={{ aspectRatio: "1240 / 775" }}>
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 origin-center scale-[0.27] sm:scale-[0.34]">
+                <TasksHero preview />
+              </div>
+            </div>
+          )}
+
+          {isCredits && (
+            <div className="relative w-full rounded-lg overflow-hidden border border-foreground/10 bg-white" style={{ aspectRatio: "1240 / 775" }}>
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 origin-center scale-[0.27] sm:scale-[0.34]">
+                <CreditsHero preview />
+              </div>
+            </div>
+          )}
+
+          {isPrototype && (
+            <div className="relative w-full rounded-lg overflow-hidden border border-foreground/10 bg-[#dfe4ea]" style={{ aspectRatio: "16 / 11" }}>
+              <img
+                src="/images/climbing-bg-capture.png"
+                alt="Climber on an outdoor wall"
+                className="absolute inset-0 h-full w-full object-cover object-[34%_26%] opacity-60"
+              />
+              <div className="absolute inset-0 bg-black/18" />
+              <div className="absolute inset-0 p-6 flex items-center justify-center">
+                <IphoneFrame
+                  src={`${CLIMBING_PROTOTYPE_BASE}#${climbingScreen === "" ? "/" : climbingScreen}`}
+                  title="Climbing gym app — prototype"
+                  className="scale-[0.66] sm:scale-[0.74]"
+                  compact
+                  sleek
+                  lockInteraction
+                  contentScale={0.84}
+                />
+              </div>
+            </div>
           )}
         </div>
-        <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed px-1">
-          {previewData.description}
-        </p>
-        <Link
-          href={`/project/${previewData.id}`}
-          className="inline-block text-xs font-medium tracking-widest uppercase text-foreground/70 hover:text-foreground transition-colors"
-        >
-          View case study →
-        </Link>
+        <div className="flex items-center justify-between px-1">
+          <p className="text-sm font-medium tracking-[0.12em] uppercase text-foreground/85">
+            {previewData.title}
+          </p>
+          <span
+            className="inline-flex h-8 w-8 items-center justify-center text-foreground/70"
+            aria-hidden
+          >
+            <ArrowRight className="h-5 w-5" strokeWidth={1.8} />
+          </span>
+        </div>
       </div>
     )
   }
 
   // Desktop floating preview
   if (previewData.id === CLIMBING_GYM_ID) return null
+  // Scale factor so content fits inside the preview area and isn’t cropped on the right
+  if (previewData.id === "entropy-i" && mousePos && windowSize) {
+    const mouseX = (mousePos.x / windowSize.w) * 2 - 1
+    const mouseY = (mousePos.y / windowSize.h) * 2 - 1
+    return (
+      <div
+        className="overflow-hidden bg-white rounded-xl flex items-center justify-center animate-[project-preview-in_0.45s_ease-out_forwards] shadow-[0_18px_42px_-22px_rgba(15,23,42,0.16),0_6px_14px_-8px_rgba(15,23,42,0.08)]"
+        style={{ width: previewW, height: previewH }}
+      >
+        <OrbPreview
+          width={previewW}
+          height={previewH}
+          mouseX={mouseX}
+          mouseY={mouseY}
+        />
+      </div>
+    )
+  }
   if (previewData.id === "ai-task-manager") {
     const heroW = 1240
     const heroH = 775
-    const scale = Math.min(previewW / heroW, previewH / heroH)
+    // Leave a small inset so the hero shadow is not clipped by the preview frame.
+    const SHADOW_BREATHING_ROOM = 16
+    const scale = Math.min((previewW - SHADOW_BREATHING_ROOM) / heroW, (previewH - SHADOW_BREATHING_ROOM) / heroH)
     return (
       <div
-        className="overflow-hidden bg-white rounded-lg"
+        className="overflow-hidden bg-white rounded-xl flex items-center justify-center"
         style={{ width: previewW, height: previewH }}
       >
         <div
-          className="origin-top-left"
+          className="origin-center shrink-0"
           style={{
             transform: `scale(${scale})`,
             width: heroW,
@@ -117,6 +173,30 @@ function ProjectPreviewContent({
           }}
         >
           <TasksHero preview />
+        </div>
+      </div>
+    )
+  }
+  if (previewData.id === "credits-and-conversion") {
+    const heroW = 1240
+    const heroH = 775
+    // Leave a small inset so the hero shadow is not clipped by the preview frame.
+    const SHADOW_BREATHING_ROOM = 16
+    const scale = Math.min((previewW - SHADOW_BREATHING_ROOM) / heroW, (previewH - SHADOW_BREATHING_ROOM) / heroH)
+    return (
+      <div
+        className="overflow-hidden bg-white rounded-xl flex items-center justify-center"
+        style={{ width: previewW, height: previewH }}
+      >
+        <div
+          className="origin-center shrink-0"
+          style={{
+            transform: `scale(${scale})`,
+            width: heroW,
+            height: heroH,
+          }}
+        >
+          <CreditsHero preview />
         </div>
       </div>
     )
@@ -133,37 +213,33 @@ function ProjectPreviewContent({
         height={previewData.previewHeight}
         sizes={`${previewW}px`}
         quality={90}
-        className="w-full h-full object-cover animate-[preview-zoom-in_2.5s_ease-out_forwards]"
+        className="animate-[preview-zoom-in_2.5s_ease-out_forwards] w-full h-full object-cover"
         priority
       />
     </div>
   )
 }
 
-export function ProjectList({
-  onActiveProjectChange,
-}: {
-  onActiveProjectChange?: (projectId: string | null) => void
-} = {}) {
+export function ProjectList() {
   const isMobile = useIsMobile()
-  const [activeProject, setActiveProject] = useState<string | null>(null)
+  const [activeProject, setActiveProject] = useState<string | null>("entropy-i")
 
-  const setActive = useCallback(
-    (id: string | null) => {
-      setActiveProject(id)
-      onActiveProjectChange?.(id)
-    },
-    [onActiveProjectChange]
-  )
+  useEffect(() => {
+    if (isMobile) {
+      setActiveProject(null)
+    } else {
+      setActiveProject((prev) => prev ?? "entropy-i")
+    }
+  }, [isMobile])
+
+  const setActive = useCallback((id: string | null) => setActiveProject(id), [])
   const scheduleLeave = useCallback(() => {
-    leaveTimeoutRef.current = setTimeout(() => setActive(null), 300)
+    leaveTimeoutRef.current = setTimeout(() => setActive("entropy-i"), 300)
   }, [setActive])
   const [climbingScreen, setClimbingScreen] = useState<"" | "/bookings">("")
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [windowSize, setWindowSize] = useState({ w: 1920, h: 1080 })
   const containerRef = useRef<HTMLDivElement>(null)
-  const latestMouseRef = useRef({ x: 0, y: 0 })
-  const mouseThrottleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const leaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -189,6 +265,13 @@ export function ProjectList({
     return () => window.removeEventListener("resize", update)
   }, [])
 
+  // Track mouse for OrbPreview (Entropy I) rotation only
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY })
+    window.addEventListener("mousemove", handleMove)
+    return () => window.removeEventListener("mousemove", handleMove)
+  }, [])
+
   const clearLeaveTimeout = useCallback(() => {
     if (leaveTimeoutRef.current !== null) {
       clearTimeout(leaveTimeoutRef.current)
@@ -196,182 +279,153 @@ export function ProjectList({
     }
   }, [])
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    latestMouseRef.current = { x: e.clientX, y: e.clientY }
-    if (mouseThrottleRef.current !== null) return
-    setMousePos({ ...latestMouseRef.current })
-    mouseThrottleRef.current = setTimeout(() => {
-      mouseThrottleRef.current = null
-      setMousePos({ ...latestMouseRef.current })
-    }, MOUSE_THROTTLE_MS)
-  }, [])
-
   const activeData = projects.find((p) => p.id === activeProject)
   const previewData = activeData
 
+  // Desktop responsive sizing: two downscale steps before mobile.
+  const desktopPreviewW = windowSize.w < 1120 ? 640 : windowSize.w < 1320 ? 720 : PREVIEW_W
+  const desktopPreviewH = Math.round(desktopPreviewW * (PREVIEW_H / PREVIEW_W))
+  const climbingBackdropW = windowSize.w < 1120 ? 640 : windowSize.w < 1320 ? 720 : 800
+  const climbingBackdropH = windowSize.w < 1120 ? 520 : windowSize.w < 1320 ? 560 : 620
+  const desktopTitleSizeClass = windowSize.w < 1120 ? "text-[13px]" : windowSize.w < 1320 ? "text-sm" : "text-base"
+  const desktopSecondarySizeClass = windowSize.w < 1120 ? "text-sm" : windowSize.w < 1320 ? "text-base" : "text-lg"
+
+  // Projects 1, 2, 3 use same large size (right-aligned); project 4 (climbing) smaller
+  const useLargePreview =
+    previewData && (previewData.id === "entropy-i" || previewData.id === "ai-task-manager" || previewData.id === "credits-and-conversion")
   const previewW =
     previewData && previewData.id === CLIMBING_GYM_ID
       ? CLIMBING_PREVIEW_W
       : previewData
-        ? Math.min(previewData.previewWidth, 600)
+        ? useLargePreview ? desktopPreviewW : Math.min(previewData.previewWidth, desktopPreviewW)
         : 0
   const previewH =
     previewData && previewData.id === CLIMBING_GYM_ID
       ? CLIMBING_PREVIEW_H
       : previewData
-        ? Math.min(previewData.previewHeight, 450)
+        ? useLargePreview ? desktopPreviewH : Math.min(previewData.previewHeight, desktopPreviewH)
         : 0
-  const left = previewData
-    ? Math.max(
-        VIEWPORT_PADDING,
-        Math.min(mousePos.x + PREVIEW_OFFSET_RIGHT, windowSize.w - previewW - VIEWPORT_PADDING)
-      )
-    : 0
-  const top = previewData
-    ? Math.max(
-        VIEWPORT_PADDING,
-        Math.min(mousePos.y - previewH / 2, windowSize.h - previewH - VIEWPORT_PADDING)
-      )
-    : 0
-
-  // Position for climbing-gym preview (used when visible; same formula so it follows cursor)
-  const climbingLeft = Math.max(
-    VIEWPORT_PADDING,
-    Math.min(
-      mousePos.x + PREVIEW_OFFSET_RIGHT,
-      windowSize.w - CLIMBING_PREVIEW_W - VIEWPORT_PADDING
-    )
-  )
-  const climbingTop = Math.max(
-    VIEWPORT_PADDING,
-    Math.min(
-      mousePos.y - CLIMBING_PREVIEW_H / 2,
-      windowSize.h - CLIMBING_PREVIEW_H - VIEWPORT_PADDING
-    )
-  )
   const isClimbingActive = activeProject === CLIMBING_GYM_ID
 
   return (
     <div
       ref={containerRef}
-      className="project-list w-full max-w-2xl px-4 sm:px-12 space-y-2"
-      onMouseMove={handleMouseMove}
+      className={`project-list w-full ${
+        isMobile ? "max-w-2xl mx-auto px-4 sm:px-12" : "max-w-[1400px] mx-auto px-4 sm:px-12"
+      }`}
     >
-      {/* Mobile: show preview in-flow above the list when a project is selected */}
-      {isMobile && previewData && (
-        <div className="mb-6 min-h-0">
-          <ProjectPreviewContent
-            previewData={previewData ?? null}
-            previewW={previewW}
-            previewH={previewH}
-            inline
-            climbingScreen={climbingScreen}
-          />
-        </div>
-      )}
+      {/* Mobile: simple stacked feed — preview + title + arrow CTA */}
+      {isMobile &&
+        projects.map((project, index) => {
+          return (
+            <Link
+              key={project.id}
+              href={project.id === "entropy-i" ? "/entropy-i" : `/project/${project.id}`}
+              className={`block pb-8 mb-8 border-b border-foreground/18 last:border-b-0 last:pb-0 last:mb-0 ${index === 0 ? "pt-20" : ""}`}
+            >
+              <ProjectPreviewContent
+                previewData={project}
+                previewW={previewW}
+                previewH={previewH}
+                inline
+                climbingScreen={climbingScreen}
+              />
+            </Link>
+          )
+        })}
 
-      {/* Desktop: climbing-gym preload + preview — iframe stays mounted so it loads on page load, we just reveal it on hover (no content-appearing effect) */}
+      {/* Desktop: two columns — list left, preview right-aligned (aligns with header/footer right edge) */}
       {!isMobile && (
-        <div
-          className={`fixed z-50 ${isClimbingActive ? "pointer-events-auto" : "pointer-events-none"}`}
-          style={{
-            left: isClimbingActive ? climbingLeft : -9999,
-            top: isClimbingActive ? climbingTop : 0,
-            width: CLIMBING_PREVIEW_W,
-            height: CLIMBING_PREVIEW_H,
-            opacity: isClimbingActive ? 1 : 0,
-            visibility: isClimbingActive ? "visible" : "hidden",
-          }}
-          onMouseEnter={clearLeaveTimeout}
-          onMouseLeave={scheduleLeave}
-        >
-          <div className="relative flex items-center justify-center w-full h-full pointer-events-none">
-            <IphoneFrame
-              src={
-                isClimbingActive
-                  ? `${CLIMBING_PROTOTYPE_BASE}#${climbingScreen === "" ? "/" : climbingScreen}`
-                  : "about:blank"
-              }
-              title="Climbing gym app — prototype"
-              contentScale={climbingScreen === "/bookings" ? 0.92 : undefined}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Desktop: floating preview for all other projects (images only) */}
-      {!isMobile && (
-        <div
-          className="fixed z-50 pointer-events-none"
-          style={{
-            left,
-            top,
-            opacity: previewData && previewData.id !== CLIMBING_GYM_ID ? 1 : 0,
-            visibility: previewData && previewData.id !== CLIMBING_GYM_ID ? "visible" : "hidden",
-          }}
-        >
-          <ProjectPreviewContent
-            previewData={previewData ?? null}
-            previewW={previewW}
-            previewH={previewH}
-            inline={false}
-          />
-        </div>
-      )}
-
-      {projects.map((project) => {
-        const rowContent = (
-          <>
-            <div className="flex items-baseline gap-3 sm:gap-6">
-              <span className="text-[10px] font-medium text-foreground/30 tracking-widest shrink-0">
-                {project.number}
-              </span>
-              <h2 className="text-xs sm:text-sm font-normal tracking-[0.15em] uppercase transition-all group-hover:pl-4 min-w-0">
+        <div className="flex w-full gap-12 sm:gap-16 lg:gap-20 items-center min-h-[min(85vh,640px)]">
+          <div className="w-full max-w-md shrink-0 pt-2">
+            {projects.map((project) => {
+        const isActive = activeProject === project.id
+        const showLine = isActive
+        const labelBlock = (
+          <div className={`flex items-center gap-5 w-[calc(100%-24px)] max-w-lg text-left pb-5 -mb-5 border-b ${showLine ? "border-foreground/15" : "border-transparent"}`}>
+            <div className="inline-block min-w-0">
+              <h2 className={`${desktopTitleSizeClass} font-normal tracking-[0.15em] uppercase ${isActive ? "text-foreground" : "text-foreground/70"}`}>
                 {project.title.includes(" — ") ? (
                   <>
                     {project.title.split(" — ")[0]}
-                    <span className="text-foreground/50"> — {project.title.split(" — ").slice(1).join(" — ")}</span>
+                    <span className={`ml-[48px] inline ${desktopSecondarySizeClass} text-foreground/50 ${isActive ? "visible" : "invisible"}`}> — {project.title.split(" — ").slice(1).join(" — ")}</span>
                   </>
                 ) : (
                   project.title
                 )}
               </h2>
             </div>
-            <span className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase shrink-0">
+            <span className={`inline-block min-w-[4.5rem] text-left text-[10px] font-medium text-foreground/30 tracking-widest uppercase shrink-0 ${isActive ? "visible" : "invisible"}`}>
               {project.tag}
             </span>
-          </>
+          </div>
         )
+
         return (
           <div
             key={project.id}
-            className="group relative py-4 border-b border-transparent hover:border-foreground/5 transition-colors touch-manipulation"
+            className="group relative flex w-full touch-manipulation"
             onMouseEnter={() => {
-              if (!isMobile) {
-                clearLeaveTimeout()
-                setActive(project.id)
-              }
+              clearLeaveTimeout()
+              setActive(project.id)
             }}
-            onMouseLeave={() => {
-              if (!isMobile) scheduleLeave()
-            }}
+            onMouseLeave={scheduleLeave}
           >
             <Link
-              href={`/project/${project.id}`}
-              className="flex items-center justify-between w-full text-left py-3 sm:py-2 -my-2 min-h-[48px] sm:min-h-[44px]"
-              onClick={(e) => {
-                if (isMobile) {
-                  e.preventDefault()
-                  setActive(project.id)
-                }
-              }}
+              href={project.id === "entropy-i" ? "/entropy-i" : `/project/${project.id}`}
+              className="py-7 shrink-0 w-full text-left"
             >
-              {rowContent}
+              {labelBlock}
             </Link>
           </div>
         )
       })}
+          </div>
 
+          <div className="flex-1 min-w-0 flex justify-end items-center">
+            {previewData && (
+              <Link
+                href={previewData.id === "entropy-i" ? "/entropy-i" : `/project/${previewData.id}`}
+                className="flex justify-end items-center animate-[project-preview-in_0.45s_ease-out_forwards] cursor-pointer shrink-0 overflow-visible"
+                onMouseEnter={clearLeaveTimeout}
+                onMouseLeave={scheduleLeave}
+              >
+                {isClimbingActive ? (
+                  <div
+                    className="relative flex items-center justify-center overflow-visible animate-[project-preview-in_0.45s_ease-out_forwards]"
+                    style={{ width: climbingBackdropW, height: climbingBackdropH }}
+                  >
+                    <div className="absolute inset-x-0 top-[30px] bottom-[30px] rounded-2xl overflow-hidden border border-foreground/10 bg-[#dfe4ea] shadow-2xl">
+                      <img
+                        src="/images/climbing-bg-capture.png"
+                        alt="Climber on an outdoor wall"
+                      className="absolute inset-0 h-full w-full object-cover object-[34%_26%] scale-100 opacity-60"
+                      />
+                      <div className="absolute inset-0 bg-black/18" />
+                    </div>
+                    <IphoneFrame
+                      src={`${CLIMBING_PROTOTYPE_BASE}#${climbingScreen === "" ? "/" : climbingScreen}`}
+                      title="Climbing gym app — prototype"
+                      className="relative z-10 translate-y-3 scale-[0.98]"
+                      sleek
+                      contentScale={climbingScreen === "/bookings" ? 0.92 : undefined}
+                    />
+                  </div>
+                ) : (
+                  <ProjectPreviewContent
+                    previewData={previewData}
+                    previewW={previewW}
+                    previewH={previewH}
+                    inline={false}
+                    mousePos={mousePos}
+                    windowSize={windowSize}
+                  />
+                )}
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -89,14 +89,14 @@ function QRCodeCard() {
             </motion.div>
             
             <motion.div 
-              className="absolute bg-[#ff6b35] bottom-[-10px] content-stretch flex flex-col items-start left-1/2 -translate-x-1/2 px-[12px] py-[4px] rounded-[9999px]" 
+              className="absolute bg-[#ff6b35] bottom-[-10px] content-stretch flex flex-col items-start left-1/2 -translate-x-1/2 px-[10px] py-[3px] rounded-[9999px]" 
               initial={{ opacity: 0, scale: 0.8, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
             >
               <div className="absolute bg-[rgba(255,255,255,0)] inset-0 rounded-[9999px] shadow-[0px_8px_12px_-2px_rgba(0,0,0,0.08)]" />
-              <div className="flex flex-col font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[12px] justify-center leading-[0] not-italic relative shrink-0 text-[9px] text-black tracking-[0.5px] uppercase">
-                <p className="leading-[12px] whitespace-pre-wrap">Scan to Entry</p>
+              <div className="flex flex-col font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[10px] justify-center leading-[0] not-italic relative shrink-0 text-[7px] text-black tracking-[0.5px] uppercase">
+                <p className="leading-[10px] whitespace-nowrap">scan to enter</p>
               </div>
             </motion.div>
           </div>

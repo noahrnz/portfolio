@@ -18,11 +18,32 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    id: "credits-and-conversion",
+    id: "entropy-i",
     number: "01",
+    title: "Entropy I",
+    tag: "Built with Figma Make",
+    image: "/images/thesis.png",
+    previewWidth: 700,
+    previewHeight: 450,
+    description: "An audio-reactive particle shape that morphs and breathes with the song.",
+    role: "Product Design Engineer",
+    year: "2026",
+    client: "Personal",
+    overview:
+      "Entropy I is a full-screen experience built around a 3D particle orb that reacts to the track \"Half Light of Dawn\" by Abul Mogard. The shape spins, morphs between sphere and cube, and scatters on interaction.",
+    challenge:
+      "Creating a visual that felt responsive to the music without being distracting, and making the interaction (hold to scatter, morph on tone shifts) feel natural.",
+    solution:
+      "I used the Web Audio API to drive the shape from the song's level and tone shifts, and added touch support so the experience works on mobile. The orb stays in sphere or cube and only morphs on big changes in the music.",
+    result:
+      "A standalone page that doubles as a visual for the track and a portfolio piece for audio-reactive and interactive work.",
+  },
+  {
+    id: "credits-and-conversion",
+    number: "02",
     title: "Credits and conversion",
-    tag: "Sybill.ai",
-    image: "/images/sybill-credits.png",
+    tag: "@ Sybill.ai",
+    image: "/images/sybill-credits.png?v=4",
     previewWidth: 600,
     previewHeight: 400,
     description: "Launching a new pricing and gating structure aimed at growth.",
@@ -40,9 +61,9 @@ export const projects: Project[] = [
   },
   {
     id: "ai-task-manager",
-    number: "02",
+    number: "03",
     title: "AI task manager",
-    tag: "Sybill.ai",
+    tag: "@ Sybill.ai",
     image: "/images/sybill-tasks-meetings.png",
     previewWidth: 600,
     previewHeight: 375,
@@ -61,9 +82,9 @@ export const projects: Project[] = [
   },
   {
     id: "climbing-gym",
-    number: "03",
+    number: "04",
     title: "Climbing gym app",
-    tag: "Touchstone",
+    tag: "Built with Cursor",
     image: "/images/climbing-gym.png",
     previewWidth: 600,
     previewHeight: 400,
@@ -80,26 +101,5 @@ export const projects: Project[] = [
       "I designed and built a mobile-first app in a few hours one Sunday: Stitch for the design, Figma Make to turn it into a React app, and Cursor to wire it up and refine the UI. You get a scannable membership pass, one-tap class browsing and booking, and a clean view of what you’re signed up for—the experience the gym’s website never had.",
     result:
       "A working prototype that proves a better path is possible. QR pass for entry, class list with book/unbook, and a profile view—all in a compact app that fits how people actually use their phones at the gym. No backend or launch yet; this was a weekend experiment to show what “good” could look like.",
-  },
-  {
-    id: "thesis",
-    number: "04",
-    title: "THESIS — Your Daily Take",
-    tag: "Experimental",
-    image: "/images/thesis.png",
-    previewWidth: 700,
-    previewHeight: 450,
-    description: "Adding AI Agent capabilities to a business texting platform.",
-    role: "Product Designer",
-    year: "2026",
-    client: "Heymarket",
-    overview:
-      "Heymarket AI brought intelligent agent capabilities to a business texting platform, enabling automated yet personalized customer interactions at scale through conversational AI.",
-    challenge:
-      "Businesses needed to respond to customer messages faster without sacrificing the personal touch. The challenge was integrating AI agents that could handle complex conversations while maintaining brand voice.",
-    solution:
-      "I designed the AI agent configuration and monitoring interface, focusing on transparency and control. Businesses could set guardrails, review AI responses, and seamlessly hand off to human agents when needed.",
-    result:
-      "The AI agent feature enabled businesses to handle significantly more conversations while maintaining high customer satisfaction scores. Response times dropped dramatically across all supported channels.",
   },
 ]

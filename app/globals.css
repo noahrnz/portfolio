@@ -148,6 +148,56 @@
   }
 }
 
+/* Credits hero (project 2): same enter + section stagger as tasks hero */
+@keyframes credits-hero-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes credits-hero-section {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Credits cards: subtle AI-style shimmer when preview cursor hovers */
+@keyframes credits-card-shimmer {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateX(320%);
+    opacity: 0;
+  }
+}
+
+/* Homepage project list: preview overlay fade + scale in */
+@keyframes project-preview-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Prototype embeds: iframe already isolates JS/CSS; layout containment helps Lighthouse */
 [data-prototype-embed] {
   contain: layout;

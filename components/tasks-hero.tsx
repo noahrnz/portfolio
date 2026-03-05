@@ -1,26 +1,22 @@
 "use client"
 
 import { useRef, useState, useEffect, useLayoutEffect } from "react"
+import Image from "next/image"
 import {
   Briefcase,
-  Bookmark,
-  ArrowUp,
-  RefreshCw,
-  Pencil,
-  Copy,
   Check,
   Circle,
   MoreVertical,
   ChevronDown,
   Mail,
-  Play,
+  Search,
 } from "lucide-react"
 
 const HERO_WIDTH = 1240
 const HERO_HEIGHT = 775
 
 // Preview-only loop: delay after entrance before cursor appears, then check 1→2→3→4, uncheck all, repeat
-const ENTRANCE_DELAY_MS = 1200
+const ENTRANCE_DELAY_MS = 850
 const MOVE_MS = 380
 const CLICK_MS = 320
 const DONE_PAUSE_MS = 700
@@ -133,7 +129,7 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
       next()
     }
 
-    const startDelay = setTimeout(runCycle, 300)
+    const startDelay = setTimeout(runCycle, 120)
     return () => {
       cancelledRef.current = true
       clearTimeout(startDelay)
@@ -144,7 +140,9 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
   return (
     <div
       ref={containerRef}
-      className={`relative bg-white rounded-t-[28px] border border-[#e5e7eb] overflow-hidden ${
+      className={`relative bg-white border border-[#e5e7eb] overflow-hidden ${
+        preview ? "rounded-xl" : "rounded-t-[28px]"
+      } ${
         preview
           ? "shadow-[0px_6px_20px_rgba(164,164,164,0.25)]"
           : "shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_6px_16px_-4px_rgba(0,0,0,0.08),0_12px_32px_-8px_rgba(0,0,0,0.06)]"
@@ -196,15 +194,12 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
         }}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-7 w-8 items-center justify-center rounded bg-[#93c5fd] text-white text-xs font-bold">
-            A
+          <div className="h-7 w-8 shrink-0 overflow-hidden rounded-lg">
+            <Image src="/images/task-meeting-icon.png" alt="" width={32} height={28} className="h-full w-full object-cover" />
           </div>
           <h1 className="text-[26px] font-semibold text-[#181d27]">
             Acme &lt;&gt; Voltra Demo
           </h1>
-          <span className="rounded-md border border-[#f5d0e9] bg-[#fdf2f9] px-2.5 py-0.5 text-sm font-medium text-[#be185d]">
-            Sales
-          </span>
           <span className="rounded-md border border-[#f5d0e9] bg-[#fdf2f9] px-2.5 py-0.5 text-sm font-medium text-[#be185d]">
             Demo
           </span>
@@ -226,9 +221,9 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
         </div>
       </div>
 
-      {/* Ask Sybill bar */}
+      {/* Search bar */}
       <div
-        className="px-10 pb-6"
+        className="px-10 pt-4 pb-6"
         style={{
           animation: "tasks-hero-section 0.4s ease-out forwards",
           animationDelay: sectionDelay(1),
@@ -236,24 +231,15 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
           animationFillMode: "forwards",
         }}
       >
-        <div className="flex h-[70px] items-center justify-between rounded-lg border border-[#a78bfa] bg-[#faf5ff] px-4">
-          <span className="text-lg text-[#6b7280]">
-            Ask Sybill to further prepare for this meeting
-          </span>
-          <div className="flex items-center gap-1.5">
-            <button type="button" className="rounded-lg p-2.5 hover:bg-gray-100">
-              <Bookmark className="h-5 w-5 text-[#6b7280]" />
-            </button>
-            <button type="button" className="rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-2.5">
-              <ArrowUp className="h-5 w-5 text-[#6b7280]" />
-            </button>
-          </div>
+        <div className="flex h-12 items-center gap-2.5 rounded-full border border-[#d1d5db] bg-white px-4">
+          <Search className="h-5 w-5 shrink-0 text-[#9ca3af]" />
+          <span className="text-[15px] text-[#9ca3af]">Search...</span>
         </div>
       </div>
 
-      {/* Tabs + actions */}
+      {/* Tabs */}
       <div
-        className="flex h-12 items-center justify-between border-b border-[#e9eaeb] px-10"
+        className="flex h-16 items-end border-b border-[#e9eaeb] px-10"
         style={{
           animation: "tasks-hero-section 0.4s ease-out forwards",
           animationDelay: sectionDelay(2),
@@ -261,31 +247,18 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
           animationFillMode: "forwards",
         }}
       >
-        <div className="flex gap-4">
+        <div className="flex gap-6">
           <button
             type="button"
-            className="border-b-2 border-[#1d4ed8] pb-4 pt-1 text-sm font-semibold text-[#1d4ed8]"
+            className="-mb-px border-b-2 border-[#1d4ed8] pb-3 pt-1 text-lg font-semibold text-[#1d4ed8]"
           >
             Summary
           </button>
           <button
             type="button"
-            className="pb-4 pt-1 text-sm font-semibold text-[#6b7280] hover:text-[#181d27]"
+            className="pb-3 pt-1 text-lg font-semibold text-[#6b7280] hover:text-[#181d27]"
           >
             Activity
-          </button>
-        </div>
-        <div className="flex items-center gap-3">
-          <button type="button" className="flex items-center gap-1.5 text-sm font-semibold text-[#535862]">
-            <RefreshCw className="h-5 w-5" />
-            Regenerate
-          </button>
-          <button type="button" className="flex items-center gap-1.5 text-sm font-semibold text-[#535862]">
-            <Pencil className="h-5 w-5" />
-            Edit
-          </button>
-          <button type="button" className="p-1.5">
-            <Copy className="h-5 w-5 text-[#535862]" />
           </button>
         </div>
       </div>
@@ -326,7 +299,7 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
               return (
                 <div
                   key={i}
-                  className={`flex items-center gap-6 border-b border-[#e9eaeb] px-6 py-4 last:border-b-0 ${
+                  className={`group flex items-center gap-6 border-b border-[#e9eaeb] px-6 py-4 last:border-b-0 ${
                     rowHighlight ? "bg-[#f8faff]" : ""
                   }`}
                 >
@@ -335,18 +308,19 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
                       ref={(el) => {
                         if (preview && el) taskCheckRefs.current[i] = el
                       }}
-                      className="h-8 w-8 shrink-0 flex items-center justify-center"
+                      className="relative h-8 w-8 shrink-0 flex items-center justify-center"
                     >
                       {done ? (
                         <div className="h-8 w-8 rounded-full bg-[#dcfce7] flex items-center justify-center">
-                          <Check className="h-5 w-5 text-[#1d4ed8]" strokeWidth={2.5} />
+                          <Check className="h-5 w-5 text-[#16a34a]" strokeWidth={2.5} />
                         </div>
                       ) : (
-                        <Circle
-                          className={`h-8 w-8 shrink-0 ${
-                            rowHighlight ? "text-[#93c5fd]" : "text-[#e5e7eb]"
-                          }`}
-                        />
+                        <>
+                          <Circle className="h-8 w-8 shrink-0 text-[#e5e7eb]" />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                            <Check className="h-5 w-5 text-[#9ca3af]" strokeWidth={2.5} />
+                          </div>
+                        </>
                       )}
                     </div>
                     <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -356,17 +330,13 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
                       <span className="shrink-0 text-[17px] text-[#717680]">{task.day}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="h-8 w-8 shrink-0 rounded-full bg-[#e8e4dc]" />
-                    <button
-                      type="button"
-                      className="flex items-center gap-1.5 rounded-full border border-[#2563eb] bg-white px-3 py-1.5 text-xs font-medium text-[#2563eb]"
-                    >
-                      <Play className="h-3.5 w-3.5" />
-                      Start
-                    </button>
-                    <button type="button" className="p-1">
-                      <MoreVertical className="h-6 w-6 text-[#535862]" />
+                  <div className="flex shrink-0 items-center gap-2">
+                    <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[#e8e4dc]">
+                      <Image src="/images/task-participant-avatar.png" alt="" width={32} height={32} className="h-full w-full object-cover" />
+                    </div>
+                    <span className="ml-4 inline-flex items-center rounded-full border border-[#D9D6FE] bg-[#F4F3FF] px-3 py-1.5 text-base font-semibold text-[#5b21b6]">Start</span>
+                    <button type="button" className="p-1 opacity-0 transition-opacity group-hover:opacity-100">
+                      <MoreVertical className="h-6 w-6 text-[#a1a1aa]" />
                     </button>
                   </div>
                 </div>
@@ -416,7 +386,9 @@ export function TasksHero({ preview = false }: { preview?: boolean }) {
           </div>
           <div className="mt-3 rounded-lg border border-[#e9eaeb] bg-white p-6">
             <div className="flex gap-4">
-              <div className="h-12 w-12 shrink-0 rounded-full bg-[#e5ddce]" />
+              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[#e5ddce]">
+                <Image src="/images/task-participant-avatar.png" alt="" width={48} height={48} className="h-full w-full object-cover" />
+              </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-[23px] font-semibold text-[#181d27]">

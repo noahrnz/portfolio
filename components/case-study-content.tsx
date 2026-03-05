@@ -6,9 +6,10 @@ import { ArrowLeft } from "lucide-react"
 import { type Project, projects } from "@/lib/projects"
 import { LazyPrototypeHero } from "@/components/lazy-prototype-hero"
 import { TasksHero } from "@/components/tasks-hero"
+import { CreditsHero } from "@/components/credits-hero"
 
-// Projects that are shown in the "Next project" link (thesis is excluded — has its own entry gate)
-const projectsForNextLink = projects.filter((p) => p.id !== "thesis")
+// Projects that are shown in the "Next project" link (entropy-i is a standalone page)
+const projectsForNextLink = projects.filter((p) => p.id !== "entropy-i")
 
 export function CaseStudyContent({ project }: { project: Project }) {
   const currentIndex = projectsForNextLink.findIndex((p) => p.id === project.id)
@@ -31,22 +32,22 @@ export function CaseStudyContent({ project }: { project: Project }) {
 
       {/* Hero — centered article style */}
       <section className="pt-40 pb-20 px-6 sm:px-12">
-        <div className="mx-auto max-w-[720px] text-center">
-          <div className="flex items-baseline justify-center gap-6 mb-6">
+        <div className="mx-auto max-w-[720px] flex flex-col items-center text-center">
+          <div className="mb-8 flex flex-col items-center gap-3">
             <span className="text-[10px] font-medium text-foreground/30 tracking-widest uppercase">
-              {project.tag}
+              {project.tag.replace(/^@\s*/, "")}
             </span>
+            <h1 className="text-4xl md:text-6xl font-light tracking-tight text-balance leading-tight text-foreground">
+              {project.title.includes(" — ") ? (
+                <>
+                  {project.title.split(" — ")[0]}
+                  <span className="text-foreground/50"> — {project.title.split(" — ").slice(1).join(" — ")}</span>
+                </>
+              ) : (
+                project.title
+              )}
+            </h1>
           </div>
-          <h1 className="text-4xl md:text-6xl font-light tracking-tight text-balance leading-tight mb-8">
-            {project.title.includes(" — ") ? (
-              <>
-                {project.title.split(" — ")[0]}
-                <span className="text-foreground/50"> — {project.title.split(" — ").slice(1).join(" — ")}</span>
-              </>
-            ) : (
-              project.title
-            )}
-          </h1>
           <p className="text-sm text-foreground/50 max-w-lg mx-auto leading-relaxed text-center">
             {project.description}
           </p>
@@ -58,28 +59,81 @@ export function CaseStudyContent({ project }: { project: Project }) {
         <div className="mx-auto max-w-[1400px]">
           {project.id === "climbing-gym" ? (
             <LazyPrototypeHero project={project} />
-          ) : project.id === "ai-task-manager" ? (
-            <div
-              className="relative w-full flex justify-center"
-              style={{
-                maxWidth: 992,
-                height: 620,
-                margin: "0 auto",
-              }}
-            >
-              {/* Positioned so scaled hero (992×620) fits in 620px slot with no cropping */}
+          ) : project.id === "credits-and-conversion" ? (
+            <>
+              {/* Mobile: keep hero simple and fully readable */}
+              <div className="relative w-full aspect-[16/10] overflow-hidden bg-secondary md:hidden">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  width={1400}
+                  height={875}
+                  className="w-full h-full object-cover"
+                  sizes="100vw"
+                  quality={90}
+                  priority
+                />
+              </div>
+              {/* Desktop/tablet: rich animated preview */}
               <div
-                className="absolute left-1/2 top-0"
+                className="relative hidden w-full justify-center overflow-hidden md:flex"
                 style={{
-                  width: 1240,
-                  height: 775,
-                  transform: "translateX(-50%) scale(0.8)",
-                  transformOrigin: "top center",
+                  maxWidth: 992,
+                  height: 620,
+                  margin: "0 auto",
                 }}
               >
-                <TasksHero />
+                <div
+                  className="absolute left-1/2 top-0"
+                  style={{
+                    width: 1240,
+                    height: 775,
+                    transform: "translateX(-50%) scale(0.8)",
+                    transformOrigin: "top center",
+                  }}
+                >
+                  <CreditsHero preview />
+                </div>
               </div>
-            </div>
+            </>
+          ) : project.id === "ai-task-manager" ? (
+            <>
+              {/* Mobile: keep hero simple and fully readable */}
+              <div className="relative w-full aspect-[16/10] overflow-hidden bg-secondary md:hidden">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  width={1400}
+                  height={875}
+                  className="w-full h-full object-cover"
+                  sizes="100vw"
+                  quality={90}
+                  priority
+                />
+              </div>
+              {/* Desktop/tablet: rich animated preview */}
+              <div
+                className="relative hidden w-full justify-center overflow-hidden md:flex"
+                style={{
+                  maxWidth: 992,
+                  height: 620,
+                  margin: "0 auto",
+                }}
+              >
+                {/* Positioned so scaled hero (992×620) fits in 620px slot; overflow-hidden prevents overlap with Overview below */}
+                <div
+                  className="absolute left-1/2 top-0"
+                  style={{
+                    width: 1240,
+                    height: 775,
+                    transform: "translateX(-50%) scale(0.8)",
+                    transformOrigin: "top center",
+                  }}
+                >
+                  <TasksHero preview />
+                </div>
+              </div>
+            </>
           ) : (
             <div className="relative w-full aspect-[16/9] overflow-hidden bg-secondary">
               <Image

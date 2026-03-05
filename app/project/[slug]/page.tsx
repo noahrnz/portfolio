@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { projects } from "@/lib/projects"
 import { CaseStudyContent } from "@/components/case-study-content"
 import { ThesisApp } from "@/components/thesis-app"
@@ -10,7 +10,9 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.id }))
+  return projects
+    .filter((p) => p.id !== "entropy-i")
+    .map((project) => ({ slug: project.id }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -29,6 +31,10 @@ export default async function ProjectPage({ params }: PageProps) {
 
   if (!project) {
     notFound()
+  }
+
+  if (slug === "entropy-i") {
+    redirect("/entropy-i")
   }
 
   if (slug === "thesis") {

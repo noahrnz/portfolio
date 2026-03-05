@@ -127,8 +127,8 @@ function Background() {
   return (
     <div className="absolute bg-[#bef264] bottom-[-16px] content-stretch flex flex-col items-start left-[86.5px] px-[16px] py-[6px] rounded-[9999px]" data-name="Background">
       <div className="absolute bg-[rgba(255,255,255,0)] inset-0 rounded-[9999px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)]" data-name="Overlay+Shadow" />
-      <div className="flex flex-col font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[15px] justify-center leading-[0] not-italic relative shrink-0 text-[10px] text-black tracking-[1px] uppercase w-[94.98px]">
-        <p className="leading-[15px] whitespace-pre-wrap">Scan to Entry</p>
+      <div className="flex flex-col font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[12px] justify-center leading-[0] not-italic relative shrink-0 text-[8px] text-black tracking-[1px] w-[94.98px]">
+        <p className="leading-[12px] whitespace-nowrap">scan to enter</p>
       </div>
     </div>
   );
