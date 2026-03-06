@@ -96,8 +96,11 @@ function ProjectPreviewContent({
               style={{ aspectRatio: `${previewData.previewWidth} / ${previewData.previewHeight}` }}
             >
               <EntropyIIPreview
-                width={Math.min(previewW, 520)}
-                height={Math.min(previewH, Math.round(520 * (previewData.previewHeight / previewData.previewWidth)))}
+                width={Math.max(280, Math.min(previewW || previewData.previewWidth, 520))}
+                height={Math.round(
+                  Math.max(280, Math.min(previewW || previewData.previewWidth, 520)) *
+                    (previewData.previewHeight / previewData.previewWidth)
+                )}
                 mouseX={0}
                 mouseY={0}
               />
