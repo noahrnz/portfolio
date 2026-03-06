@@ -9,9 +9,13 @@ import { IphoneFrame } from "@/components/iphone-frame"
 import { TasksHero } from "@/components/tasks-hero"
 import { CreditsHero } from "@/components/credits-hero"
 import { OrbPreview } from "@/components/orb-preview"
+import { EntropyIIPreview } from "@/components/entropy-ii-preview"
 import type { Project } from "@/lib/projects"
 
 const CLIMBING_GYM_ID = "climbing-gym"
+const ENTROPY_I_ID = "entropy-i"
+const ENTROPY_II_ID = "entropy-ii"
+const PROJECT_DEFAULT_ID = ENTROPY_II_ID
 const CLIMBING_PROTOTYPE_BASE = "/prototypes/climbing-gym/index.html"
 
 const CLIMBING_SWITCH_DELAY_MS = 3000
@@ -22,6 +26,11 @@ const VIEWPORT_PADDING = 24
 // Large preview in right column (same trigger, bigger image)
 const PREVIEW_W = 800
 const PREVIEW_H = 560
+
+function getProjectHref(projectId: string) {
+  if (projectId === ENTROPY_I_ID) return "/entropy-i"
+  return `/project/${projectId}`
+}
 
 // Match touch devices or narrow viewports where hover preview isn't useful
 function useIsMobile() {
@@ -60,6 +69,7 @@ function ProjectPreviewContent({
   // Mobile / inline: simple static image + short description + link (no live prototype); full image visible, not cut off
   if (inline) {
     const isEntropy = previewData.id === "entropy-i"
+    const isEntropyII = previewData.id === ENTROPY_II_ID
     const isTasks = previewData.id === "ai-task-manager"
     const isCredits = previewData.id === "credits-and-conversion"
     const isPrototype = previewData.id === CLIMBING_GYM_ID
@@ -74,6 +84,20 @@ function ProjectPreviewContent({
               <OrbPreview
                 width={previewData.previewHeight}
                 height={previewData.previewHeight}
+                mouseX={0}
+                mouseY={0}
+              />
+            </div>
+          )}
+
+          {isEntropyII && (
+            <div
+              className="relative w-full rounded-lg overflow-hidden border border-foreground/10 flex items-center justify-center"
+              style={{ aspectRatio: `${previewData.previewWidth} / ${previewData.previewHeight}` }}
+            >
+              <EntropyIIPreview
+                width={Math.min(previewW, 520)}
+                height={Math.min(previewH, Math.round(520 * (previewData.previewHeight / previewData.previewWidth)))}
                 mouseX={0}
                 mouseY={0}
               />
@@ -153,6 +177,23 @@ function ProjectPreviewContent({
       </div>
     )
   }
+  if (previewData.id === ENTROPY_II_ID && mousePos && windowSize) {
+    const mouseX = (mousePos.x / windowSize.w) * 2 - 1
+    const mouseY = (mousePos.y / windowSize.h) * 2 - 1
+    return (
+      <div
+        className="overflow-hidden rounded-xl flex items-center justify-center animate-[project-preview-in_0.45s_ease-out_forwards] shadow-[0_18px_42px_-22px_rgba(15,23,42,0.16),0_6px_14px_-8px_rgba(15,23,42,0.08)]"
+        style={{ width: previewW, height: previewH }}
+      >
+        <EntropyIIPreview
+          width={previewW}
+          height={previewH}
+          mouseX={mouseX}
+          mouseY={mouseY}
+        />
+      </div>
+    )
+  }
   if (previewData.id === "ai-task-manager") {
     const heroW = 1240
     const heroH = 775
@@ -222,19 +263,19 @@ function ProjectPreviewContent({
 
 export function ProjectList() {
   const isMobile = useIsMobile()
-  const [activeProject, setActiveProject] = useState<string | null>("entropy-i")
+  const [activeProject, setActiveProject] = useState<string | null>(PROJECT_DEFAULT_ID)
 
   useEffect(() => {
     if (isMobile) {
       setActiveProject(null)
     } else {
-      setActiveProject((prev) => prev ?? "entropy-i")
+      setActiveProject((prev) => prev ?? PROJECT_DEFAULT_ID)
     }
   }, [isMobile])
 
   const setActive = useCallback((id: string | null) => setActiveProject(id), [])
   const scheduleLeave = useCallback(() => {
-    leaveTimeoutRef.current = setTimeout(() => setActive("entropy-i"), 300)
+    leaveTimeoutRef.current = setTimeout(() => setActive(PROJECT_DEFAULT_ID), 300)
   }, [setActive])
   const [climbingScreen, setClimbingScreen] = useState<"" | "/bookings">("")
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -292,7 +333,11 @@ export function ProjectList() {
 
   // Projects 1, 2, 3 use same large size (right-aligned); project 4 (climbing) smaller
   const useLargePreview =
-    previewData && (previewData.id === "entropy-i" || previewData.id === "ai-task-manager" || previewData.id === "credits-and-conversion")
+    previewData &&
+    (previewData.id === ENTROPY_I_ID ||
+      previewData.id === ENTROPY_II_ID ||
+      previewData.id === "ai-task-manager" ||
+      previewData.id === "credits-and-conversion")
   const previewW =
     previewData && previewData.id === CLIMBING_GYM_ID
       ? CLIMBING_PREVIEW_W
@@ -320,7 +365,7 @@ export function ProjectList() {
           return (
             <Link
               key={project.id}
-              href={project.id === "entropy-i" ? "/entropy-i" : `/project/${project.id}`}
+              href={getProjectHref(project.id)}
               className={`block pb-8 mb-8 border-b border-foreground/18 last:border-b-0 last:pb-0 last:mb-0 ${index === 0 ? "pt-20" : ""}`}
             >
               <ProjectPreviewContent
@@ -372,7 +417,7 @@ export function ProjectList() {
             onMouseLeave={scheduleLeave}
           >
             <Link
-              href={project.id === "entropy-i" ? "/entropy-i" : `/project/${project.id}`}
+              href={getProjectHref(project.id)}
               className="py-7 shrink-0 w-full text-left"
             >
               {labelBlock}
@@ -385,7 +430,7 @@ export function ProjectList() {
           <div className="flex-1 min-w-0 flex justify-end items-center">
             {previewData && (
               <Link
-                href={previewData.id === "entropy-i" ? "/entropy-i" : `/project/${previewData.id}`}
+                href={getProjectHref(previewData.id)}
                 className="flex justify-end items-center animate-[project-preview-in_0.45s_ease-out_forwards] cursor-pointer shrink-0 overflow-visible"
                 onMouseEnter={clearLeaveTimeout}
                 onMouseLeave={scheduleLeave}

@@ -18,8 +18,29 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    id: "entropy-i",
+    id: "entropy-ii",
     number: "01",
+    title: "Entropy II",
+    tag: "Built with Three.js + Cursor",
+    image: "/images/thesis.png",
+    previewWidth: 700,
+    previewHeight: 450,
+    description: "An immersive 3D landscape with scroll-led cinematic intro and free exploration.",
+    role: "Product Design Engineer",
+    year: "2026",
+    client: "Personal",
+    overview:
+      "Entropy II is an interactive 3D world built as a portfolio environment. It blends cinematic onboarding with hands-on exploration, scene switching, ambient particles, and spatial atmosphere.",
+    challenge:
+      "The experience needed to feel intentional from the first second while still giving users control quickly. It also had to run smoothly with rich visual details and custom model assets.",
+    solution:
+      "I built a scroll-driven intro handoff, then transitioned to drag-based movement controls and zoom. The scene system supports multiple looks and layered detail without sacrificing responsiveness.",
+    result:
+      "A polished, exploratory project that showcases interaction design, visual direction, and implementation craft in one continuous real-time experience.",
+  },
+  {
+    id: "entropy-i",
+    number: "02",
     title: "Entropy I",
     tag: "Built with Figma Make",
     image: "/images/thesis.png",
@@ -40,7 +61,7 @@ export const projects: Project[] = [
   },
   {
     id: "credits-and-conversion",
-    number: "02",
+    number: "03",
     title: "Credits and conversion",
     tag: "@ Sybill.ai",
     image: "/images/sybill-credits.png?v=4",
@@ -61,7 +82,7 @@ export const projects: Project[] = [
   },
   {
     id: "ai-task-manager",
-    number: "03",
+    number: "04",
     title: "AI task manager",
     tag: "@ Sybill.ai",
     image: "/images/sybill-tasks-meetings.png",
@@ -82,7 +103,7 @@ export const projects: Project[] = [
   },
   {
     id: "climbing-gym",
-    number: "04",
+    number: "05",
     title: "Climbing gym app",
     tag: "Built with Cursor",
     image: "/images/climbing-gym.png",

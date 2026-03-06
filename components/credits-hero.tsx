@@ -325,14 +325,13 @@ export function CreditsHero({ preview = false }: { preview?: boolean }) {
                   <AlertCircle className="h-4 w-4 text-[#175cd3]" />
                 </span>
                 <span>You have 200/500 free credits left until Jan 15.</span>
-                <a
-                  href="#"
+                <button
+                  type="button"
                   className="inline-flex items-center gap-1 font-semibold text-[#175cd3] hover:underline"
-                  onClick={(e) => e.preventDefault()}
                 >
                   Upgrade my plan
                   <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
+                </button>
               </div>
               <button type="button" className="shrink-0 p-1 text-[#667085] hover:text-[#344054]" aria-label="Dismiss">
                 <X className="h-4 w-4" />
