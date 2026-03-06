@@ -1047,20 +1047,17 @@ export default function TestPage() {
             >
               Entropy II
             </h1>
+            <p
+              className={`mt-4 px-4 text-sm text-white/82 md:text-base transition-all duration-700 ${
+                introTextVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+              }`}
+              style={{ transitionDelay: "380ms" }}
+            >
+              {needsAudioStart
+                ? "Tap anywhere to start"
+                : "Tap to begin your flight"}
+            </p>
           </div>
-          <p
-            className={`absolute left-0 right-0 px-4 text-sm text-white/82 md:text-base transition-all duration-700 ${
-              introTextVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-            }`}
-            style={{
-              transitionDelay: "380ms",
-              bottom: "max(3.5rem, calc(env(safe-area-inset-bottom, 0px) + 2rem))",
-            }}
-          >
-            {needsAudioStart
-              ? "Tap anywhere to start"
-              : "Tap to begin your flight"}
-          </p>
         </div>
       )}
       {showControlsHint && (
